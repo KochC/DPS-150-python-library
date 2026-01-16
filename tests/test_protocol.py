@@ -106,7 +106,9 @@ def test_decode_packet_invalid_header():
 
 def test_decode_packet_incomplete():
     """Test decoding incomplete packet."""
-    packet = bytes([HEADER_INPUT, CMD_GET, VOLTAGE_SET, 5])  # Missing data and checksum
+    # Create a packet that has minimum length but length byte indicates more data
+    # Length byte says 5, so we need 5+5=10 bytes total, but only provide 8
+    packet = bytes([HEADER_INPUT, CMD_GET, VOLTAGE_SET, 5, 0x01, 0x02, 0x03])  # Missing data and checksum
     
     with pytest.raises(DPS150ProtocolError, match="Packet incomplete"):
         decode_packet(packet)
